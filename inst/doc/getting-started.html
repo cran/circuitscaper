@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Getting Started with circuitscaper</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Getting Started with circuitscaper</h1>
+
+
+
+<div id="what-is-circuit-theory-connectivity" class="section level2">
+<h2>What is circuit-theory connectivity?</h2>
+<p>Landscape connectivity — how easily organisms, genes, or ecological
+processes can move across a landscape — is central to spatial ecology
+and conservation biology. Circuit theory offers a powerful way to model
+it. The idea is to treat a landscape as an electrical circuit: each
+raster cell is a node, adjacent cells are connected by resistors, and
+current flowing through the network reveals movement patterns. Unlike
+least-cost path methods, which find only the single cheapest route,
+circuit theory considers all possible pathways simultaneously. This
+makes it especially effective at identifying movement corridors and
+pinch points — places where connectivity is funneled through narrow
+gaps.</p>
+<p>circuitscaper brings this approach to R by wrapping two Julia tools:
+<strong>Circuitscape</strong> (which computes connectivity between
+specific sites) and <strong>Omniscape</strong> (which maps connectivity
+continuously across an entire landscape).</p>
+<p>This vignette provides a basic overview of the circuitscaper R
+package. For more details on circuit theory and the underlying Julia
+algorithms, see the <a href="https://circuitscape.org">Circuitscape</a>
+and <a href="https://docs.circuitscape.org/Omniscape.jl/latest/">Omniscape</a>
+documentation.</p>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>circuitscaper requires Julia (&gt;= 1.9) with the Circuitscape and
+Omniscape packages. You can install everything from R:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install circuitscaper (from GitHub during development)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># remotes::install_github(&quot;matthewkling/circuitscaper&quot;)</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(circuitscaper)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co"># First time only: install Julia and required packages</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">cs_install_julia</span>()</span></code></pre></div>
+<p>If you already have Julia installed, <code>cs_setup()</code> will
+find it automatically or you can point to it:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">cs_setup</span>(<span class="at">julia_home =</span> <span class="st">&quot;/path/to/julia/bin&quot;</span>)</span></code></pre></div>
+</div>
+<div id="key-inputs" class="section level2">
+<h2>Key Inputs</h2>
+<div id="the-resistance-surface" class="section level3">
+<h3>The resistance surface</h3>
+<p>Every analysis starts with a <strong>resistance surface</strong> — a
+raster where each cell’s value represents how difficult it is for the
+organism or process of interest to move through that location. These are
+typically derived from land cover or habitat suitability models. For
+example, a resistance surface for a forest-dwelling mammal might assign
+low values to forest (easy to traverse), moderate values to grassland,
+and high values to urban areas or water. (Note that while the
+Circuitscape.jl Julia library allows resistance datasets to be specified
+as adjacency graph networks, circuitscaper currently only supports
+rasters.)</p>
+<p>Resistance values must be positive. If your data represents
+conductance (ease of movement) rather than resistance, set
+<code>resistance_is = &quot;conductances&quot;</code>.</p>
+</div>
+<div id="focal-nodes" class="section level3">
+<h3>Focal nodes</h3>
+<p>Circuitscape’s focal-node modes (pairwise, one-to-all, all-to-one)
+require <strong>focal nodes</strong> — the sites between which you want
+to measure connectivity. These are typically habitat patches,
+populations, protected areas, or sampling locations. You can provide
+them as:</p>
+<ul>
+<li>A matrix or data.frame of x/y coordinates (simplest)</li>
+<li>A raster with positive integer IDs at each site (0 and NA are
+ignored)</li>
+</ul>
+</div>
+</div>
+<div id="choosing-a-mode" class="section level2">
+<h2>Choosing a Mode</h2>
+<p>circuitscaper provides four Circuitscape modes and one Omniscape
+mode. Here’s how to choose:</p>
+<p><strong>Pairwise</strong> is a common starting point. Use it when you
+have discrete sites (habitat patches, populations) and want to know how
+well-connected they are to each other. The resistance matrix is useful
+as a distance metric for analyses such as isolation by resistance in
+population genetics.</p>
+<p><strong>One-to-all</strong> iterates over each focal node, injecting
+current at that node and grounding all others. This emphasizes how
+current disperses outward from each source, making it useful for
+modeling recolonization potential or identifying which sites have the
+best overall connectivity to the network.</p>
+<p><strong>All-to-one</strong> is the reverse: all other nodes inject
+current while each node takes a turn as the ground. This emphasizes
+convergence and is useful for identifying the most accessible or
+reachable sites — for example, which protected areas are easiest to
+reach via migration.</p>
+<p><strong>Advanced</strong> is for when you want full control over
+source and ground placement rather than using focal nodes. You provide
+explicit source current and ground conductance rasters, and a single
+circuit is solved. This is useful for modeling directional movement
+between a defined source area and a destination (e.g., current flow
+between a migratory species’ winter and summer ranges).</p>
+<p><strong>Omniscape</strong> is fundamentally different — it doesn’t
+require focal nodes at all. It uses a moving window to compute
+omnidirectional connectivity everywhere in the landscape. Use it for
+wall-to-wall connectivity mapping when you want to identify corridors
+and barriers across the full extent.</p>
+</div>
+<div id="circuitscape-pairwise-mode" class="section level2">
+<h2>Circuitscape: Pairwise Mode</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(circuitscaper)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Resistance surface (higher values = harder to traverse)</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>resistance <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/resistance.tif&quot;</span>, <span class="at">package =</span> <span class="st">&quot;circuitscaper&quot;</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Option 1: Focal nodes as coordinates (simplest)</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">40</span>, <span class="dv">40</span>, <span class="dv">40</span>, <span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">40</span>, <span class="dv">10</span>), <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, coords)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># Option 2: Focal nodes as a raster (integer IDs; 0 and NA are not nodes)</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co"># locations &lt;- rast(&quot;path/to/focal_nodes.tif&quot;)</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co"># result &lt;- cs_pairwise(resistance, locations)</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co"># Cumulative current map -- high values indicate important movement corridors</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="fu">plot</span>(result<span class="sc">$</span>current_map)</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co"># Pairwise resistance matrix -- can be used as a connectivity distance metric</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>result<span class="sc">$</span>resistance_matrix</span></code></pre></div>
+</div>
+<div id="circuitscape-one-to-all-and-all-to-one-modes" class="section level2">
+<h2>Circuitscape: One-to-All and All-to-One Modes</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_one_to_all</span>(resistance, coords)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">plot</span>(result)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_all_to_one</span>(resistance, coords)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">plot</span>(result<span class="sc">$</span>cumulative_current)</span></code></pre></div>
+</div>
+<div id="circuitscape-advanced-mode" class="section level2">
+<h2>Circuitscape: Advanced Mode</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>source_layer <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/source.tif&quot;</span>, <span class="at">package =</span> <span class="st">&quot;circuitscaper&quot;</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>ground_layer <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/ground.tif&quot;</span>, <span class="at">package =</span> <span class="st">&quot;circuitscaper&quot;</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_advanced</span>(resistance, source_layer, ground_layer,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                      <span class="at">ground_is =</span> <span class="st">&quot;conductances&quot;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co"># Current density -- corridors and pinch points where flow is concentrated</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co"># i.e. possible preservation priorities</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="fu">plot</span>(result[[<span class="st">&quot;current&quot;</span>]])</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co"># Voltage -- analogous to movement probability, decreasing with distance</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># and resistance from sources</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="fu">plot</span>(result[[<span class="st">&quot;voltage&quot;</span>]])</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co"># Power dissipation -- areas of current flow through high-resistance areas,</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co"># i.e. possible restoration priorities</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="fu">plot</span>(result[[<span class="st">&quot;current&quot;</span>]]<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> resistance)</span></code></pre></div>
+</div>
+<div id="additional-circuitscape-options" class="section level2">
+<h2>Additional Circuitscape Options</h2>
+<p>The <code>cs_*</code> functions expose several additional
+Circuitscape features.</p>
+<div id="per-pair-current-and-voltage-maps" class="section level3">
+<h3>Per-pair current and voltage maps</h3>
+<p>By default, pairwise, one-to-all, and all-to-one modes return only
+the cumulative current map. Set <code>cumulative_only = FALSE</code> to
+include per-pair (or per-node) current layers, and
+<code>write_voltage = TRUE</code> to include voltage layers:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, coords,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                      <span class="at">cumulative_only =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                      <span class="at">write_voltage =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">names</span>(result<span class="sc">$</span>current_map)</span></code></pre></div>
+</div>
+<div id="variable-source-strengths" class="section level3">
+<h3>Variable source strengths</h3>
+<p>By default, each focal node injects 1 amp of current. Use
+<code>source_strengths</code> to assign different injection strengths
+per node — useful when sites differ in population size or habitat
+area:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Strengths in the same order as the locations</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>strengths <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="fl">1.0</span>, <span class="fl">0.5</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_one_to_all</span>(resistance, coords, <span class="at">source_strengths =</span> strengths)</span></code></pre></div>
+</div>
+<div id="short-circuit-regions" class="section level3">
+<h3>Short-circuit regions</h3>
+<p>Short-circuit regions represent areas of zero resistance (e.g., lakes
+that can be crossed freely, or developed areas that funnel movement).
+Pass a raster where cells sharing the same positive integer value are
+short-circuited:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>polygons <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;path/to/short_circuit_regions.tif&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, locations, <span class="at">short_circuit =</span> polygons)</span></code></pre></div>
+</div>
+<div id="includeexclude-pairs" class="section level3">
+<h3>Include/exclude pairs</h3>
+<p>For large numbers of focal nodes, you may want to restrict analysis
+to a subset of pairs:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, locations,</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>                      <span class="at">included_pairs =</span> <span class="st">&quot;path/to/pairs.txt&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="omniscape-moving-window-connectivity" class="section level2">
+<h2>Omniscape: Moving-Window Connectivity</h2>
+<p>Omniscape computes omnidirectional connectivity using a moving
+window. It does not require focal nodes — every cell can serve as a
+source.</p>
+<p>The two key parameters are:</p>
+<ul>
+<li><strong><code>radius</code></strong>: The moving window radius in
+pixels. This defines the neighborhood over which connectivity is
+evaluated — conceptually, how far the organism can disperse. Larger
+radii capture longer-distance connectivity but increase computation time
+substantially.</li>
+<li><strong><code>block_size</code></strong>: Aggregation factor for
+source points (default 1, no aggregation). Setting
+<code>block_size = 3</code> groups sources into 3x3 blocks, reducing the
+number of circuit solves with typically negligible effects on results.
+This is the primary knob for trading off speed vs. precision.</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>, <span class="at">block_size =</span> <span class="dv">3</span>)</span></code></pre></div>
+<p>Omniscape returns up to three layers:</p>
+<ul>
+<li><strong><code>cumulative_current</code></strong>: Raw current flow
+summed across all moving-window iterations. Higher values indicate cells
+that carry more current overall.</li>
+<li><strong><code>flow_potential</code></strong>: What current flow
+would look like if resistance were uniform everywhere. This isolates the
+effect of source geometry from landscape resistance.</li>
+<li><strong><code>normalized_current</code></strong>: Cumulative current
+divided by flow potential. Values greater than 1 indicate corridors
+where connectivity is higher than expected given the arrangement of
+sources; values less than 1 indicate relative barriers. This is usually
+the most informative layer.</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">plot</span>(result)</span></code></pre></div>
+<div id="with-source-strength-weights" class="section level3">
+<h3>With source strength weights</h3>
+<p>By default, source strength is derived from the inverse of
+resistance. You can provide an explicit source strength raster (e.g.,
+habitat quality) to weight sources independently of resistance:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>source_strength <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;path/to/habitat_quality.tif&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>                 <span class="at">source_strength =</span> source_strength)</span></code></pre></div>
+</div>
+<div id="parallel-processing" class="section level3">
+<h3>Parallel processing</h3>
+<p>For large landscapes, enable Julia multithreading to reduce compute
+times. Julia’s thread count is fixed at startup, so set it via
+<code>cs_setup()</code> before any other circuitscaper calls:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Set thread count at the start of your session</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">cs_setup</span>(<span class="at">threads =</span> <span class="dv">4</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>                 <span class="at">block_size =</span> <span class="dv">5</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>                 <span class="at">parallelize =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="performance" class="section level2">
+<h2>Performance</h2>
+<p>Circuitscape computation time scales with the number of non-NA cells
+in the resistance raster and, for focal-node modes, with the number of
+pairs or iterations. A few practical guidelines:</p>
+<ul>
+<li><strong>Raster size</strong>: Problems up to ~1 million cells run
+comfortably. For larger landscapes, consider aggregating the resistance
+surface before analysis.</li>
+<li><strong>Number of focal nodes</strong>: Pairwise mode solves
+n*(n-1)/2 circuits, so computation grows quadratically with the number
+of nodes. Use <code>included_pairs</code> to limit the set if
+needed.</li>
+<li><strong>Omniscape</strong>: Computation is dominated by the number
+of source pixels and the <code>radius</code>. Use
+<code>block_size</code> to reduce the source count and keep
+<code>radius</code> as small as ecologically justified. Enable
+<code>parallelize = TRUE</code> for large runs.</li>
+<li><strong>Solver choice</strong>: The default <code>&quot;cg+amg&quot;</code>
+(iterative) solver works well for large problems. For small rasters
+(under ~10,000 cells), <code>&quot;cholmod&quot;</code> (direct solver) may be
+faster.</li>
+</ul>
+</div>
+<div id="saving-outputs" class="section level2">
+<h2>Saving Outputs</h2>
+<p>By default, intermediate files are written to a temporary directory
+and cleaned up. To persist output files (ASC rasters, INI configuration,
+and resistance matrices), use <code>output_dir</code>:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, locations,</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                      <span class="at">output_dir =</span> <span class="st">&quot;my_output_directory&quot;</span>)</span></code></pre></div>
+</div>
+<div id="tips" class="section level2">
+<h2>Tips</h2>
+<ul>
+<li><p><strong>CRS preservation</strong>: circuitscaper captures the CRS
+from your input raster and reattaches it to outputs, even though
+Circuitscape’s ASCII grid format doesn’t carry CRS information.</p></li>
+<li><p><strong>Conductance input</strong>: If your surface represents
+ease of movement rather than difficulty, set
+<code>resistance_is = &quot;conductances&quot;</code> to avoid inverting values
+manually. There’s a similar option for grounds in advanced
+mode.</p></li>
+<li><p><strong>Normalized current for Circuitscape</strong>: Omniscape
+returns normalized current (actual current / flow potential)
+automatically. You can compute the equivalent for Circuitscape by
+running the analysis twice — once with your resistance surface and once
+with a uniform surface — and dividing:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>result      <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, sites)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>result_null <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance <span class="sc">*</span> <span class="dv">0</span> <span class="sc">+</span> <span class="dv">1</span>, sites)</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>normalized  <span class="ot">&lt;-</span> result<span class="sc">$</span>current_map <span class="sc">/</span> result_null<span class="sc">$</span>current_map</span></code></pre></div>
+<p>Values greater than 1 indicate areas where landscape resistance is
+concentrating current flow; values less than 1 indicate areas where
+current is lower than expected from geometry alone.</p></li>
+<li><p><strong>Verbose output</strong>: Set <code>verbose = TRUE</code>
+to see Circuitscape’s solver progress, useful for debugging or
+monitoring long runs.</p></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
