@@ -29,8 +29,10 @@ from R, while Julia handles the heavy lifting under the hood.
 ## Installation
 
 ``` r
-# 1. Install the R package
-remotes::install_github("matthewkling/circuitscaper")
+# 1. Install the R package from CRAN
+install.packages("circuitscaper")
+# or install the development version from GitHub
+# remotes::install_github("matthewkling/circuitscaper")
 
 # 2. Let the package install Julia and the necessary Julia libraries
 library(circuitscaper)
@@ -53,7 +55,7 @@ result <- cs_pairwise(resistance, focal_sites)
 plot(result$current_map)
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
+<img src="man/figures/README-example-1.png" alt="" width="100%" />
 
 ``` r
 
@@ -63,19 +65,21 @@ result <- os_run(resistance, radius = 10)
 plot(result$normalized_current)
 ```
 
-<img src="man/figures/README-example-2.png" width="100%" />
+<img src="man/figures/README-example-2.png" alt="" width="100%" />
 
 ## Functions
 
-| Function                 | Description                                     | Julia backend                                                      |
-|--------------------------|-------------------------------------------------|--------------------------------------------------------------------|
-| **`cs_pairwise()`**      | Pairwise effective resistance and current flow  | `Circuitscape.compute()`                                           |
-| **`cs_one_to_all()`**    | One-to-all connectivity analysis                | `Circuitscape.compute()`                                           |
-| **`cs_all_to_one()`**    | All-to-one connectivity analysis                | `Circuitscape.compute()`                                           |
-| **`cs_advanced()`**      | Advanced mode with custom sources and grounds   | `Circuitscape.compute()`                                           |
-| **`os_run()`**           | Omniscape moving-window connectivity            | `Omniscape.run_omniscape()`                                        |
-| **`cs_setup()`**         | Initialize Julia session (called automatically) | `JuliaCall::julia_library()`                                       |
-| **`cs_install_julia()`** | Install Julia and required packages             | `JuliaCall::install_julia()`, `JuliaCall::julia_install_package()` |
+| Function | Description | Julia backend |
+|----|----|----|
+| **`cs_pairwise()`** | Pairwise effective resistance and current flow | `Circuitscape.compute()` |
+| **`cs_one_to_all()`** | One-to-all connectivity analysis | `Circuitscape.compute()` |
+| **`cs_all_to_one()`** | All-to-one connectivity analysis | `Circuitscape.compute()` |
+| **`cs_advanced()`** | Advanced mode with custom sources and grounds | `Circuitscape.compute()` |
+| **`os_run()`** | Omniscape moving-window connectivity | `Omniscape.run_omniscape()` |
+| **`os_condition()`** | Define conditions for conditional Omniscape connectivity | ??? |
+| **`cs_setup()`** | Initialize Julia session (called automatically) | `JuliaCall::julia_library()` |
+| **`cs_install_julia()`** | Install Julia and required packages | `JuliaCall::install_julia()`, `JuliaCall::julia_install_package()` |
+| **`cs_julia_available()`** | Check whether Julia, Circuitscape.jl, and Omniscape.jl are installed | `julia -e "using Circuitscape"` via `system2()` |
 
 ## Requirements
 

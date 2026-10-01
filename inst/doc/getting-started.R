@@ -96,6 +96,20 @@ knitr::opts_chunk$set(
 # result <- os_run(resistance, radius = 20,
 #                  source_strength = source_strength)
 
+## ----omniscape-equal, eval = FALSE--------------------------------------------
+# landcover <- rast("path/to/landcover.tif")
+# 
+# result <- os_run(resistance, radius = 20,
+#                  condition = os_condition(landcover, type = "equal"))
+
+## ----omniscape-future, eval = FALSE-------------------------------------------
+# temp_now <- rast("path/to/temperature_current.tif")
+# temp_future <- rast("path/to/temperature_2080.tif")
+# 
+# result <- os_run(resistance, radius = 20,
+#                  condition = os_condition(temp_now, future = temp_future,
+#                                           lower = -3, upper = 1))
+
 ## ----omniscape-parallel, eval = FALSE-----------------------------------------
 # # Set thread count at the start of your session
 # cs_setup(threads = 4)

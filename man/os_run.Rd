@@ -24,7 +24,7 @@ os_run(
 )
 }
 \arguments{
-\item{resistance}{A \link[terra:SpatRaster-class]{terra::SpatRaster} or file path. The resistance (or
+\item{resistance}{A \link[terra:SpatRaster]{terra::SpatRaster} or file path. The resistance (or
 conductance) surface. Higher values represent greater resistance to
 movement.}
 
@@ -32,7 +32,7 @@ movement.}
 maximum distance over which connectivity is evaluated from each source
 pixel.}
 
-\item{source_strength}{Optional \link[terra:SpatRaster-class]{terra::SpatRaster} or file path. Source
+\item{source_strength}{Optional \link[terra:SpatRaster]{terra::SpatRaster} or file path. Source
 strength weights, often derived from habitat quality or suitability, where
 higher values indicate stronger sources of movement. If \code{NULL} (default),
 source strength is set to the inverse of resistance (i.e., all non-nodata
@@ -60,17 +60,18 @@ Default \code{TRUE}.}
 
 \item{calc_flow_potential}{Logical. Compute flow potential. Default \code{TRUE}.}
 
-\item{condition}{Optional \link[terra:SpatRaster-class]{terra::SpatRaster} or file path. Conditional layer
-for targeted connectivity analysis.}
+\item{condition}{Optional conditional connectivity specification, which
+restricts each target to sources with compatible values on one or two
+condition layers. Either an \code{\link[=os_condition]{os_condition()}} object, a list of two
+\code{\link[=os_condition]{os_condition()}} objects (sources must satisfy both), or a single
+\link[terra:SpatRaster]{terra::SpatRaster} or file path, which is shorthand for
+\code{os_condition(x, type = "equal")}. Use \code{\link[=os_condition]{os_condition()}} for range-based
+(\code{"within"}) comparisons and for comparing present-day source values
+against future target values. Default \code{NULL} (no conditions).}
 
-\item{condition_type}{Character. How the condition layer filters connectivity:
-\code{"within"} (connectivity only between source and target cells whose
-condition values fall within a specified range) or \code{"equal"} (connectivity
-only between cells with equal condition values, evaluated pairwise). Only
-relevant if \code{condition} is provided. Note: \code{"within"} currently uses
-Omniscape's default unbounded range (\code{-Inf} to \code{Inf}), which effectively
-includes all cells. Finer control over range bounds is planned for a
-future version.}
+\item{condition_type}{Deprecated. Use
+\code{condition = os_condition(x, type = ...)} instead. Only \code{"equal"} is
+still accepted here.}
 
 \item{parallelize}{Logical. Use Julia multithreading. Default \code{FALSE}.
 Julia's thread count is fixed at startup. If Julia was already initialized
@@ -87,7 +88,7 @@ there. Default \code{NULL} uses a temporary directory.}
 \item{verbose}{Logical. Print Omniscape output. Default \code{FALSE}.}
 }
 \value{
-A \link[terra:SpatRaster-class]{terra::SpatRaster} with the following layers (depending on
+A \link[terra:SpatRaster]{terra::SpatRaster} with the following layers (depending on
 options):
 \describe{
 \item{cumulative_current}{Raw cumulative current flow. Always present.
@@ -109,11 +110,17 @@ Performs an Omniscape analysis, computing omnidirectional landscape
 connectivity using a moving window approach based on circuit theory.
 }
 \examples{
-\dontshow{if (circuitscaper::cs_julia_available()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (circuitscaper::cs_julia_available()) withAutoprint(\{ # examplesIf}
 library(terra)
 res <- rast(system.file("extdata/resistance.tif", package = "circuitscaper"))
-result <- os_run(res, radius = 20)
+result <- os_run(res, radius = 10)
 plot(result)
+
+# Conditional connectivity: only connect cells in the same zone
+# (here, the left and right halves of the landscape)
+zones <- (init(res, "col") > ncol(res) / 2) + 1
+result_cond <- os_run(res, radius = 10, condition = zones)
+plot(result_cond)
 \dontshow{\}) # examplesIf}
 }
 \references{
@@ -125,5 +132,5 @@ Omniscape.jl: Software to compute omnidirectional landscape connectivity.
 Omniscape.jl: \url{https://docs.circuitscape.org/Omniscape.jl/latest/}
 }
 \seealso{
-\code{\link[=cs_pairwise]{cs_pairwise()}}, \code{\link[=cs_setup]{cs_setup()}}
+\code{\link[=os_condition]{os_condition()}}, \code{\link[=cs_pairwise]{cs_pairwise()}}, \code{\link[=cs_setup]{cs_setup()}}
 }

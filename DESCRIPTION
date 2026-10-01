@@ -1,6 +1,6 @@
 Package: circuitscaper
 Title: 'Circuitscape' and 'Omniscape' Connectivity Analysis via 'Julia'
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Matthew", "Kling", email = "mattkling@berkeley.edu",
                   role = c("aut", "cre", "cph"))
 Author: Matthew Kling [aut, cre, cph]
@@ -22,10 +22,10 @@ Imports: terra, JuliaCall, utils
 Suggests: testthat (>= 3.0.0), knitr, rmarkdown
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.3.2
 Config/testthat/edition: 3
 SystemRequirements: Julia (>= 1.9), Circuitscape.jl, Omniscape.jl
+Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-04-04 13:27:15 UTC; matthewkling
+Packaged: 2026-10-01 16:06:54 UTC; matthewkling
 Repository: CRAN
-Date/Publication: 2026-04-09 09:20:02 UTC
+Date/Publication: 2026-10-01 17:20:02 UTC

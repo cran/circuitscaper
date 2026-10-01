@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -576,17 +577,45 @@ habitat quality) to weight sources independently of resistance:</p>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
 <span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>                 <span class="at">source_strength =</span> source_strength)</span></code></pre></div>
 </div>
+<div id="conditional-connectivity" class="section level3">
+<h3>Conditional connectivity</h3>
+<p>Conditional connectivity restricts which sources are connected to
+each target, based on their values on a condition layer. Use
+<code>os_condition()</code> to define the comparison. For categorical
+data, <code>type = &quot;equal&quot;</code> connects only cells in the same
+class:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>landcover <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;path/to/landcover.tif&quot;</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>                 <span class="at">condition =</span> <span class="fu">os_condition</span>(landcover, <span class="at">type =</span> <span class="st">&quot;equal&quot;</span>))</span></code></pre></div>
+<p>For continuous data, <code>lower</code> and <code>upper</code> bound
+the difference between source and target values. Supplying a
+<code>future</code> layer compares each source’s present-day value
+against the target’s future value, as in climate-tracking connectivity.
+Here, sources connect to targets whose future temperature is between 1
+degree cooler and 3 degrees warmer than the source’s present
+temperature:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>temp_now <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;path/to/temperature_current.tif&quot;</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>temp_future <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="st">&quot;path/to/temperature_2080.tif&quot;</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>                 <span class="at">condition =</span> <span class="fu">os_condition</span>(temp_now, <span class="at">future =</span> temp_future,</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>                                          <span class="at">lower =</span> <span class="sc">-</span><span class="dv">3</span>, <span class="at">upper =</span> <span class="dv">1</span>))</span></code></pre></div>
+<p>Up to two conditions can be combined by passing a list of
+<code>os_condition()</code> objects; see <code>?os_condition</code> for
+details.</p>
+</div>
 <div id="parallel-processing" class="section level3">
 <h3>Parallel processing</h3>
 <p>For large landscapes, enable Julia multithreading to reduce compute
 times. Julia’s thread count is fixed at startup, so set it via
 <code>cs_setup()</code> before any other circuitscaper calls:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Set thread count at the start of your session</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">cs_setup</span>(<span class="at">threads =</span> <span class="dv">4</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>                 <span class="at">block_size =</span> <span class="dv">5</span>,</span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>                 <span class="at">parallelize =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Set thread count at the start of your session</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">cs_setup</span>(<span class="at">threads =</span> <span class="dv">4</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>                 <span class="at">block_size =</span> <span class="dv">5</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>                 <span class="at">parallelize =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="performance" class="section level2">
@@ -618,8 +647,8 @@ faster.</li>
 <p>By default, intermediate files are written to a temporary directory
 and cleaned up. To persist output files (ASC rasters, INI configuration,
 and resistance matrices), use <code>output_dir</code>:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, locations,</span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                      <span class="at">output_dir =</span> <span class="st">&quot;my_output_directory&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, locations,</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>                      <span class="at">output_dir =</span> <span class="st">&quot;my_output_directory&quot;</span>)</span></code></pre></div>
 </div>
 <div id="tips" class="section level2">
 <h2>Tips</h2>
@@ -637,9 +666,9 @@ returns normalized current (actual current / flow potential)
 automatically. You can compute the equivalent for Circuitscape by
 running the analysis twice — once with your resistance surface and once
 with a uniform surface — and dividing:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>result      <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, sites)</span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>result_null <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance <span class="sc">*</span> <span class="dv">0</span> <span class="sc">+</span> <span class="dv">1</span>, sites)</span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>normalized  <span class="ot">&lt;-</span> result<span class="sc">$</span>current_map <span class="sc">/</span> result_null<span class="sc">$</span>current_map</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>result      <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance, sites)</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>result_null <span class="ot">&lt;-</span> <span class="fu">cs_pairwise</span>(resistance <span class="sc">*</span> <span class="dv">0</span> <span class="sc">+</span> <span class="dv">1</span>, sites)</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>normalized  <span class="ot">&lt;-</span> result<span class="sc">$</span>current_map <span class="sc">/</span> result_null<span class="sc">$</span>current_map</span></code></pre></div>
 <p>Values greater than 1 indicate areas where landscape resistance is
 concentrating current flow; values less than 1 indicate areas where
 current is lower than expected from geometry alone.</p></li>
