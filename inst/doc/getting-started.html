@@ -366,7 +366,7 @@ documentation.</p>
 </div>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
-<p>circuitscaper requires Julia (&gt;= 1.9) with the Circuitscape and
+<p>circuitscaper requires Julia (&gt;= 1.10) with the Circuitscape and
 Omniscape packages. You can install everything from R:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install circuitscaper (from GitHub during development)</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># remotes::install_github(&quot;matthewkling/circuitscaper&quot;)</span></span>
@@ -375,8 +375,14 @@ Omniscape packages. You can install everything from R:</p>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co"># First time only: install Julia and required packages</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">cs_install_julia</span>()</span></code></pre></div>
+<p><code>cs_install_julia()</code> downloads the official Julia release
+for your platform from julialang.org into circuitscaper’s own data
+directory, so it doesn’t touch any other Julia you have installed.</p>
 <p>If you already have Julia installed, <code>cs_setup()</code> will
-find it automatically or you can point to it:</p>
+find it automatically, searching the <code>JULIA_HOME</code> and
+<code>JULIA_BINDIR</code> environment variables, a Julia installed by
+<code>cs_install_julia()</code>, and your PATH. If Julia is somewhere
+else, you can point to it:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">cs_setup</span>(<span class="at">julia_home =</span> <span class="st">&quot;/path/to/julia/bin&quot;</span>)</span></code></pre></div>
 </div>
 <div id="key-inputs" class="section level2">
@@ -395,7 +401,10 @@ as adjacency graph networks, circuitscaper currently only supports
 rasters.)</p>
 <p>Resistance values must be positive. If your data represents
 conductance (ease of movement) rather than resistance, set
-<code>resistance_is = &quot;conductances&quot;</code>.</p>
+<code>resistance_is = &quot;conductances&quot;</code>. Circuitscape treats a
+conductance of zero as no connection, but Omniscape requires all values
+to be positive in either case. To make cells impassable, set them to
+<code>NA</code>.</p>
 </div>
 <div id="focal-nodes" class="section level3">
 <h3>Focal nodes</h3>
@@ -608,14 +617,19 @@ details.</p>
 <div id="parallel-processing" class="section level3">
 <h3>Parallel processing</h3>
 <p>For large landscapes, enable Julia multithreading to reduce compute
-times. Julia’s thread count is fixed at startup, so set it via
-<code>cs_setup()</code> before any other circuitscaper calls:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Set thread count at the start of your session</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">cs_setup</span>(<span class="at">threads =</span> <span class="dv">4</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>                 <span class="at">block_size =</span> <span class="dv">5</span>,</span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>                 <span class="at">parallelize =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+times. Set the number of threads with <code>cs_setup()</code>, ideally
+at the start of your session:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">cs_setup</span>(<span class="at">threads =</span> <span class="dv">4</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">os_run</span>(resistance, <span class="at">radius =</span> <span class="dv">20</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>                 <span class="at">block_size =</span> <span class="dv">5</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>                 <span class="at">parallelize =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Julia’s thread count is fixed when Julia starts, so if Julia is
+already running with fewer threads, <code>cs_setup(threads = 4)</code>
+restarts it. That takes about as long as the first setup, since
+Circuitscape and Omniscape are loaded and warmed up again. If the
+running Julia session can’t run in parallel, <code>os_run()</code>
+warns, says how to fix it, and runs serially.</p>
 </div>
 </div>
 <div id="performance" class="section level2">

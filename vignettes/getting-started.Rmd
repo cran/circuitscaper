@@ -39,7 +39,7 @@ more details on circuit theory and the underlying Julia algorithms, see the
 
 ## Installation
 
-circuitscaper requires Julia (>= 1.9) with the Circuitscape and Omniscape
+circuitscaper requires Julia (>= 1.10) with the Circuitscape and Omniscape
 packages. You can install everything from R:
 
 ```{r install, eval = FALSE}
@@ -52,8 +52,14 @@ library(circuitscaper)
 cs_install_julia()
 ```
 
-If you already have Julia installed, `cs_setup()` will find it automatically
-or you can point to it:
+`cs_install_julia()` downloads the official Julia release for your platform
+from julialang.org into circuitscaper's own data directory, so it doesn't
+touch any other Julia you have installed.
+
+If you already have Julia installed, `cs_setup()` will find it automatically,
+searching the `JULIA_HOME` and `JULIA_BINDIR` environment variables, a Julia
+installed by `cs_install_julia()`, and your PATH. If Julia is somewhere else,
+you can point to it:
 
 ```{r setup, eval = FALSE}
 cs_setup(julia_home = "/path/to/julia/bin")
@@ -75,6 +81,9 @@ supports rasters.)
 
 Resistance values must be positive. If your data represents conductance
 (ease of movement) rather than resistance, set `resistance_is = "conductances"`.
+Circuitscape treats a conductance of zero as no connection, but Omniscape
+requires all values to be positive in either case. To make cells impassable,
+set them to `NA`.
 
 ### Focal nodes
 
@@ -315,18 +324,23 @@ Up to two conditions can be combined by passing a list of
 
 ### Parallel processing
 
-For large landscapes, enable Julia multithreading to reduce compute times. 
-Julia's thread count is fixed at startup, so set it via `cs_setup()` before any 
-other circuitscaper calls: 
+For large landscapes, enable Julia multithreading to reduce compute times.
+Set the number of threads with `cs_setup()`, ideally at the start of your
+session:
 
 ```{r omniscape-parallel, eval = FALSE}
-# Set thread count at the start of your session
 cs_setup(threads = 4)
 
 result <- os_run(resistance, radius = 20,
                  block_size = 5,
                  parallelize = TRUE)
 ```
+
+Julia's thread count is fixed when Julia starts, so if Julia is already
+running with fewer threads, `cs_setup(threads = 4)` restarts it. That takes
+about as long as the first setup, since Circuitscape and Omniscape are
+loaded and warmed up again. If the running Julia session can't run in
+parallel, `os_run()` warns, says how to fix it, and runs serially.
 
 
 ## Performance

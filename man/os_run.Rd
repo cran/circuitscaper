@@ -74,16 +74,24 @@ against future target values. Default \code{NULL} (no conditions).}
 still accepted here.}
 
 \item{parallelize}{Logical. Use Julia multithreading. Default \code{FALSE}.
-Julia's thread count is fixed at startup. If Julia was already initialized
-without enough threads, a warning is issued. To avoid this, call
-\code{\link[=cs_setup]{cs_setup()}} with the \code{threads} argument at the start of your session.}
+Set the number of threads with \code{\link[=cs_setup]{cs_setup()}}'s \code{threads} argument, which
+restarts Julia if it is already running with fewer threads. If the
+running Julia session cannot run Omniscape in parallel (it has only one
+thread, or it was started with an interactive thread, which Omniscape
+releases before 0.6.3 do not support), \code{os_run()} warns and runs
+serially.}
 
-\item{julia_threads}{Integer. Number of Julia threads if \code{parallelize = TRUE}. Default \code{2}. Ignored if Julia is already running with fewer threads.}
+\item{julia_threads}{Integer. Number of Julia threads to start if
+\code{parallelize = TRUE} and Julia is not yet running. Default \code{2}. Has no
+effect once Julia is running (\code{os_run()} doesn't restart Julia);
+Omniscape then uses all of Julia's threads.}
 
 \item{solver}{Character. Solver to use: \code{"cg+amg"} (default) or \code{"cholmod"}.}
 
 \item{output_dir}{Optional character path. If provided, output files persist
-there. Default \code{NULL} uses a temporary directory.}
+there, in Omniscape's \verb{omniscape_output/} subdirectory, as ASCII grids
+(\code{.asc}). Default \code{NULL} uses a temporary directory. To save the results
+in another format, write the returned raster with \code{\link[terra:writeRaster]{terra::writeRaster()}}.}
 
 \item{verbose}{Logical. Print Omniscape output. Default \code{FALSE}.}
 }

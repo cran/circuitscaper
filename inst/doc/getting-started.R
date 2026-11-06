@@ -111,7 +111,6 @@ knitr::opts_chunk$set(
 #                                           lower = -3, upper = 1))
 
 ## ----omniscape-parallel, eval = FALSE-----------------------------------------
-# # Set thread count at the start of your session
 # cs_setup(threads = 4)
 # 
 # result <- os_run(resistance, radius = 20,

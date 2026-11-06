@@ -7,10 +7,13 @@
 cs_install_julia(force = FALSE, version = "latest")
 }
 \arguments{
-\item{force}{Logical. If \code{TRUE}, reinstall Julia and packages even if they
-appear to be already present. Default \code{FALSE}.}
+\item{force}{Logical. If \code{TRUE}, download and install Julia even if a
+Julia installation is already present, and reinstall the Julia packages.
+Use this to replace a Julia installation that is too old. Default
+\code{FALSE}.}
 
-\item{version}{Character. Julia version to install. Default \code{"latest"}.}
+\item{version}{Character. Julia version to install, e.g. \code{"1.12.1"}.
+Default \code{"latest"}, the latest stable release. Must be at least 1.10.}
 }
 \value{
 Invisibly returns \code{TRUE} on success, \code{FALSE} if cancelled.
@@ -22,6 +25,18 @@ the recommended first step after installing the circuitscaper R package.
 \details{
 In interactive sessions, prompts for confirmation before downloading. In
 non-interactive sessions (e.g., CI), proceeds without prompting.
+
+If no suitable Julia is found (see \code{\link[=cs_setup]{cs_setup()}} for where it looks), or if
+\code{force = TRUE}, the official Julia release for your platform is downloaded
+from julialang.org, checked against its published size and checksum, and
+unpacked into circuitscaper's user data directory
+(\code{tools::R_user_dir("circuitscaper", "data")}). That Julia is then used by
+\code{\link[=cs_setup]{cs_setup()}} in later sessions. Julia installed by other means (e.g.,
+juliaup or the official installers) works too; in that case
+\code{cs_install_julia()} just adds the Julia packages.
+
+The Julia packages are installed into Julia's default package depot
+(usually \verb{~/.julia}), as with any Julia installation.
 }
 \examples{
 \dontrun{

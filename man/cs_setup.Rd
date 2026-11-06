@@ -4,21 +4,23 @@
 \alias{cs_setup}
 \title{Set Up Julia and Load Circuitscape/Omniscape}
 \usage{
-cs_setup(julia_home = NULL, threads = 1L, quiet = TRUE, ...)
+cs_setup(julia_home = NULL, threads = 1L, quiet = TRUE)
 }
 \arguments{
 \item{julia_home}{Character. Path to the Julia \verb{bin/} directory. If
-\code{NULL} (default), the system PATH and common locations are searched.}
+\code{NULL} (default), Julia is looked for in: the \code{JULIA_HOME} option or
+environment variable, the \code{JULIA_BINDIR} environment variable, a Julia
+installed by \code{\link[=cs_install_julia]{cs_install_julia()}} (or by \code{JuliaCall::install_julia()}),
+the system PATH (including a login shell's PATH on macOS and Linux), and
+common Windows install locations.}
 
-\item{threads}{Integer. Number of Julia threads to start. Default \code{1L}.
-Must be set before Julia initializes — once Julia is running, the thread
-count cannot be changed without restarting R. This setting controls
-parallelism for \code{\link[=os_run]{os_run()}} only; Circuitscape functions (\verb{cs_*}) run
-single-threaded regardless of this value.}
+\item{threads}{Integer. Number of Julia threads. Default \code{1L}. If Julia
+is already running with fewer threads, it is restarted with \code{threads}
+threads (see Threading, below). This setting controls parallelism for
+\code{\link[=os_run]{os_run()}} only; Circuitscape functions (\verb{cs_*}) run single-threaded
+regardless of this value.}
 
 \item{quiet}{Logical. Suppress Julia startup messages. Default \code{TRUE}.}
-
-\item{...}{Additional arguments passed to \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}.}
 }
 \value{
 Invisibly returns \code{TRUE} on success.
@@ -36,16 +38,19 @@ directing you to \code{\link[=cs_install_julia]{cs_install_julia()}}.
 
 \code{cs_setup()} will:
 \itemize{
-\item Verify that Julia is installed and accessible.
+\item Verify that Julia is installed and accessible, and start it. Julia runs
+in its own process, connected to R by 'JuliaConnectoR'.
 \item Verify that the Circuitscape and Omniscape Julia packages are installed.
 \item Load both packages and warm up the JIT compiler.
 }
 
 Once Julia is initialized, it stays warm for the R session. Subsequent calls
-to \code{cs_setup()} return immediately.
+to \code{cs_setup()} return immediately. If the Julia process has stopped in
+the meantime (for example, it crashed or ran out of memory, or was stopped
+with \code{JuliaConnectoR::stopJulia()}), the next \code{cs_setup()} call, or the
+next \verb{cs_*()} or \verb{os_*()} call, starts and sets up Julia again.
 \subsection{Threading}{
 
-Julia's thread count is fixed at startup and cannot be changed mid-session.
 Multi-threading is used by \code{\link[=os_run]{os_run()}} when \code{parallelize = TRUE}.
 Circuitscape functions (\code{cs_pairwise}, \code{cs_one_to_all}, etc.) do not
 benefit from multiple threads.
@@ -53,6 +58,19 @@ benefit from multiple threads.
 \if{html}{\out{<div class="sourceCode">}}\preformatted{cs_setup(threads = 4)
 os_run(resistance, radius = 50, parallelize = TRUE)
 }\if{html}{\out{</div>}}
+
+Julia's thread count is fixed when Julia starts, so if Julia is already
+running with fewer threads, \code{cs_setup(threads = )} restarts it. This
+takes as long as the first setup, since Circuitscape and Omniscape are
+loaded and warmed up again, and it discards anything else in this R
+session's Julia (e.g., objects created through 'JuliaConnectoR' by other
+code). Asking for fewer threads than Julia has doesn't restart it.
+
+Julia is started with \code{JULIA_NUM_THREADS} set to \code{"N,0"}: N threads and no
+interactive threads. Omniscape releases before 0.6.3 fail in parallel
+when Julia has an interactive thread, so \code{cs_setup(threads = )} also
+restarts a Julia that has one, and \code{\link[=os_run]{os_run()}} falls back to a serial run
+with a warning if it finds one.
 }
 }
 \examples{
